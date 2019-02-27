@@ -1,0 +1,10 @@
+Package: GeneralFunctions
+Type: Package
+Title: Some functions commonly used by Paul
+Version: 0.1.0
+Author: Paul Essers
+Maintainer: Paul Essers <paulessers@hotmail.com>
+Description: Does all kinds of stuff
+License: What license is it under?
+Encoding: UTF-8
+LazyData: true
