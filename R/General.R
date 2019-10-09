@@ -10,7 +10,7 @@ alphaNumeric<-function(s){
 
 signatureListFromFile <- function(fl, name=1, start=3){
     #make a list containing all the signatures from a text file
-    if(!grepl(".txt", fl)){error("please use a txt file")}
+    # if(!grepl(".txt", fl)){error("please use a txt file")}
     con <- file(fl)
     open(con);
     signatures.list <- list();
@@ -129,7 +129,26 @@ pval2stars = function(p){
     ifelse(p<0.001,"***",ifelse(p<0.01, "**",ifelse(p<0.05, "*","")))
 }
 
+transparent<-function(someColor, alpha=100){
+    newColor<-col2rgb(someColor)
+    apply(newColor, 2, function(curcoldata){rgb(red=curcoldata[1], green=curcoldata[2],
+                                                blue=curcoldata[3],alpha=alpha, maxColorValue=255)})
+}
 
+addStarsToCorrplot = function(full=clinical, feature_names1=signames, feature_names2=feature_names1, star.cex=1.5, star.offset=0.22){
+    # calculate significance of correlations, for adding stars to the plot
+    cor_grid = expand.grid(feature1=feature_names1, feature2=feature_names2, stringsAsFactors = F)
+    location_1 = data.frame(row.names=feature_names1, coordinate=seq(1,length(feature_names1),1))
+    location_2 = data.frame(row.names=feature_names2, coordinate=seq(length(feature_names2),1,-1))
+    cor_grid$coord.x = location_1[cor_grid$feature1,"coordinate"]
+    cor_grid$coord.y = location_2[cor_grid$feature2,"coordinate"]
+    cor_grid = cor_grid[cor_grid$feature1 != cor_grid$feature2,] # in case
+    cor_grid$p.val = apply(cor_grid,1,function(x){ cor.test(full[,x[1] ],full[, x[2]])$p.val })
 
+    # add the stars
+    for(i in 1:nrow(cor_grid)){
+        text(x=cor_grid$coord.x[i],y=cor_grid$coord.y[i]+star.offset,labels=pval2stars(cor_grid$p.val[i]), adj=c(0.5,0.5), cex=star.cex)
+    }
+}
 
 
